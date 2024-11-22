@@ -1,10 +1,20 @@
 from fastapi import FastAPI
 import mlflow
 import mlflow.pyfunc
-
+from contextlib import asynccontextmanager
 model = None
 signature = None
 app = FastAPI()
+
+@asynccontextmanager # soon after imports
+async def lifespan(app: FastAPI):
+    # at start
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    yield
+    # at stop
+    return
+# after asnyccontextmanager
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/") 
 async def read_root():
