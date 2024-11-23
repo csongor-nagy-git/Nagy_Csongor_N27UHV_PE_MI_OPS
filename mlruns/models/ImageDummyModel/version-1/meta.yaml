@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1732398517985
+current_stage: None
+description: ''
+last_updated_timestamp: 1732398517985
+name: ImageDummyModel
+run_id: 041568b301a744b6b8a411e21d594107
+run_link: ''
+source: mlflow-artifacts:/960631084710351227/041568b301a744b6b8a411e21d594107/artifacts/model
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/960631084710351227/041568b301a744b6b8a411e21d594107/artifacts/model
+user_id: null
+version: 1
