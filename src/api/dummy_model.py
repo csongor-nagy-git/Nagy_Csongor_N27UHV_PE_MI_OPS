@@ -6,9 +6,17 @@ from PIL import Image
 # Define a dummy model class
 class DummyImageModel(mlflow.pyfunc.PythonModel):
     def predict(self, context, model_input):
-        # Dummy prediction: Randomly assigns a label (1-5) for each image
+        # Dummy prediction: Randomly generates a softmax output for each image
         num_samples = model_input.shape[0]
-        return np.random.randint(1, 6, size=(num_samples,))
+        
+        # Random logits for 5 classes
+        logits = np.random.randn(num_samples, 5)
+        
+        # Apply softmax to logits
+        exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))  # Stability fix
+        softmax_output = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
+        
+        return softmax_output
 
 # Function to preprocess an image (resize to 224x224, normalize to 0-1 range)
 def preprocess_image(image_path):
