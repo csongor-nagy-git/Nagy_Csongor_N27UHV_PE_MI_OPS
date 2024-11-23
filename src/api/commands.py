@@ -12,5 +12,5 @@ def post_data(data, queue_name, host = "localhost", port = 5672, user = "guest",
 
 if __name__ == "__main__":
     url = "http://localhost:8000"
-    run_id = "c49025503fee4cb7b25669f8bc919b1e" # your mlflow run_id please
+    run_id = "041568b301a744b6b8a411e21d594107"
     resp = requests.get(url + "/model/" + run_id)    
