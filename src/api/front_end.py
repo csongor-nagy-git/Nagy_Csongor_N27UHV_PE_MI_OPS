@@ -4,9 +4,6 @@ import pika
 import requests
 from PIL import Image
 
-
-#%% Simple interface
-
 host = "localhost"
 port = 5672
 user = "guest"
@@ -36,5 +33,21 @@ if upload is not None:
     channel.queue_declare(queue="image")
     channel.basic_publish(exchange='', routing_key="image", body=image_bytes)
     resp = requests.get("http://localhost:8000/predict/image").json()
-    st.write("Prediction Result:", resp)
+    # A predikciós érték alapján egy szöveges üzenet
+    prediction_map = {
+        1: "Healthy",
+        2: "Mild Diabetic Retinopathy",
+        3: "Moderate Diabetic Retinopathy",
+        4: "Severe Diabetic Retinopathy",
+        5: "Proliferative Diabetic Retinopathy"
+    }
+
+    # A predikció érték lekérése
+    prediction_value = resp["prediction"][0]
+
+    # Az érték alapján a megfelelő szöveg megjelenítése
+    prediction_text = prediction_map.get(prediction_value, "Unknown Prediction")
+
+    # A szöveges eredmény megjelenítése
+    st.write("Prediction Result:", prediction_text)
     connection.close()
