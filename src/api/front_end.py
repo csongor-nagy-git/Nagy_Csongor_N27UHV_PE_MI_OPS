@@ -7,13 +7,19 @@ import base64
 import io
 import cv2
 import numpy as np
+import tensorflow as tf
+import os
 
 host = "localhost"
 port = 5672
 user = "guest"
 password = "guest"
 url = "http://localhost:8000"
-upload = st.file_uploader("Upload a fundus image", type=["png", "jpg", "jpeg"])
+saved_models_dir = "saved_models"  # Directory where Keras models are stored
+
+# Global variable to store the model
+if 'model' not in st.session_state:
+    st.session_state.model = None
 
 def ben_graham_preprocessing(image):
     """Applies Ben Graham preprocessing with enhanced color preservation."""
@@ -47,16 +53,39 @@ def ben_graham_preprocessing(image):
     # Convert back to PIL Image
     return Image.fromarray(img)
 
-run_id = st.text_input("Run ID")
-if st.button("Load model"):
-    resp = requests.get(url + "/model/" + run_id) 
-    st.write(resp.content)
-else:
-    st.write("Click the button to load model.")
+# Load Keras model
+def load_keras_model(model_name):
+    """Loads a Keras model from the saved_models directory."""
+    model_path = os.path.join(saved_models_dir, model_name)
+    if os.path.exists(model_path):
+        return tf.keras.models.load_model(model_path)
+    else:
+        st.error("Model not found. Please check the name and try again.")
+        return None
 
-resp = requests.get(url + "/model/current") 
-run_id = resp.content.decode("utf-8")
-st.write(f"Current model: {run_id}")
+# Map severities to labels
+severity_labels = {
+    0: "No Diabetic Retinopathy",
+    1: "Mild Diabetic Retinopathy",
+    2: "Moderate Diabetic Retinopathy",
+    3: "Severe Diabetic Retinopathy",
+    4: "Proliferative Diabetic Retinopathy"
+}
+
+# Title of the application
+st.title("Diabetic Retinopathy Detection")
+
+# Model selection section below the title
+st.header("Load a Keras Model")
+model_name = st.text_input("Enter the Keras model name (e.g., model.h5):")
+if st.button("Load Model"):
+    st.session_state.model = load_keras_model(model_name)
+    if st.session_state.model:
+        st.success(f"Model '{model_name}' loaded successfully!")
+
+# File upload section
+st.header("Upload a fundus image")
+upload = st.file_uploader("Please make sure that it has a good quality!", type=["png", "jpg", "jpeg"], key="fundus_image_upload")
 
 if upload is not None:
     img = Image.open(upload)
@@ -87,28 +116,20 @@ if upload is not None:
         unsafe_allow_html=True,
     )
 
-    image_bytes = upload.getvalue()
-    st.write("Converted to bytes")
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=host, port=port, credentials=pika.PlainCredentials(user, password)))
-    channel = connection.channel()
-    channel.queue_declare(queue="image")
-    channel.basic_publish(exchange='', routing_key="image", body=image_bytes)
-    resp = requests.get("http://localhost:8000/predict/image").json()
-    # A predikciós érték alapján egy szöveges üzenet
-    prediction_map = {
-        1: "Healthy",
-        2: "Mild Diabetic Retinopathy",
-        3: "Moderate Diabetic Retinopathy",
-        4: "Severe Diabetic Retinopathy",
-        5: "Proliferative Diabetic Retinopathy"
-    }
+    # Predict using the loaded model
+    if st.session_state.model:
+        try:
+            with st.spinner("Running prediction..."):
+                preprocessed_img = preprocessed_img.resize((224, 224))  # Resize for Keras input
+                img_array = np.array(preprocessed_img).astype('float32') / 255.0
+                img_array = np.expand_dims(img_array, axis=0)
 
-    # A predikció érték lekérése
-    prediction_value = resp["prediction"][0]
+                prediction = st.session_state.model.predict(img_array)[0][0]  # Single value prediction
+                rounded_prediction = round(prediction)  # Round the value to nearest integer
+                label = severity_labels.get(rounded_prediction, "Unknown Severity")
 
-    # Az érték alapján a megfelelő szöveg megjelenítése
-    prediction_text = prediction_map.get(prediction_value, "Unknown Prediction")
-
-    # A szöveges eredmény megjelenítése
-    st.write("Prediction Result:", prediction_text)
-    connection.close()
+            st.success(f"Prediction Result: {label}")
+        except Exception as e:
+            st.error(f"Error during prediction: {str(e)}")
+    else:
+        st.warning("Please load a model before running predictions.")
