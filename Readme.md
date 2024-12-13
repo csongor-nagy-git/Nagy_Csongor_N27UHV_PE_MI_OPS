@@ -23,7 +23,7 @@ This application provides an intuitive **Streamlit UI** for analyzing fundus ima
 ---
 
 ## **Features**
-- 📥 **Upload fundus images** in PNG, JPG, or JPEG formats. (you can sample images in data folder)
+- 📥 **Upload fundus images** in PNG, JPG, or JPEG formats. (you can find sample images in data folder)
 - 🔍 **Load Keras models** stored locally in the `saved_models` folder. (e.g.:  DR_EfficientNet_APTOS_Regression_Final.keras)
 - 📊 **Predict severity** of diabetic retinopathy with a single click. 
 - 🎯 **User-friendly interface** with image previews and result display.
@@ -48,8 +48,8 @@ This application provides an intuitive **Streamlit UI** for analyzing fundus ima
 ### Installation Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/fundus-analysis-app.git
-   cd fundus-analysis-app
+   git clone https://github.com/csongor-nagy-git/Nagy_Csongor_N27UHV_PE_MI_OPS.git
+   cd Nagy_Csongor_N27UHV_PE_MI_OPS
 
 2. **Install required dependencies**:  
     ```bash
@@ -60,6 +60,7 @@ This application provides an intuitive **Streamlit UI** for analyzing fundus ima
 
 4. **Run the application**:  
     ```bash
+    python back_end.py
     streamlit run front_end.py
     ```
 
