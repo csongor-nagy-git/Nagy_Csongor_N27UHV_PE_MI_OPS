@@ -12,8 +12,6 @@
 - [Usage](#usage)
 - [Model Format](#model-format)
 - [Prediction Categories](#prediction-categories)
-- [Screenshots](#screenshots)
-- [License](#license)
 
 ---
 
