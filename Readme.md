@@ -23,9 +23,9 @@ This application provides an intuitive **Streamlit UI** for analyzing fundus ima
 ---
 
 ## **Features**
-- 📥 **Upload fundus images** in PNG, JPG, or JPEG formats.
-- 🔍 **Load Keras models** stored locally in the `saved_models` folder.
-- 📊 **Predict severity** of diabetic retinopathy with a single click.
+- 📥 **Upload fundus images** in PNG, JPG, or JPEG formats. (you can sample images in data folder)
+- 🔍 **Load Keras models** stored locally in the `saved_models` folder. (e.g.:  DR_EfficientNet_APTOS_Regression_Final.keras)
+- 📊 **Predict severity** of diabetic retinopathy with a single click. 
 - 🎯 **User-friendly interface** with image previews and result display.
 
 ---
