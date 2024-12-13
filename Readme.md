@@ -50,3 +50,50 @@ This application provides an intuitive **Streamlit UI** for analyzing fundus ima
    ```bash
    git clone https://github.com/your-username/fundus-analysis-app.git
    cd fundus-analysis-app
+
+2. **Install required dependencies**:  
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3. **Place your Keras models** in the `saved_models` directory.  
+
+4. **Run the application**:  
+    ```bash
+    streamlit run front_end.py
+    ```
+
+## **Usage**
+- 🚀 **Load a Model**:  
+   - Enter the name of a `.h5` or `.keras` model file located in the `saved_models` folder.  
+   - Click the **"Load Model"** button to load the model.
+
+- 📥 **Upload an Image**:  
+   - Upload a fundus image in **PNG**, **JPG**, or **JPEG** format using the file uploader.  
+   - The uploaded image will be displayed on the interface.
+
+- 🔍 **Run Prediction**:  
+   - Once the model is loaded and the image is uploaded, the app analyzes the image and predicts the severity level.  
+   - The result will be displayed as one of the following severity categories.
+
+## **Model Format**
+- 📁 **Supported Formats**:  
+   - The model must be saved in **`.h5`** or **`.keras`** format.  
+
+- 📐 **Input Requirements**:  
+   - The model should accept input images of shape **`(224, 224, 3)`**.  
+   - Images are resized automatically to meet this requirement before being passed to the model.
+
+- ✅ **Directory**:  
+   - Place your model files in the **`saved_models`** folder.
+
+## **Prediction Categories**
+The application predicts one of the following severity levels for diabetic retinopathy:
+
+| **Category** | **Description**                   |
+|--------------|-----------------------------------|
+| 0            | No Diabetic Retinopathy           |
+| 1            | Mild Diabetic Retinopathy         |
+| 2            | Moderate Diabetic Retinopathy     |
+| 3            | Severe Diabetic Retinopathy       |
+| 4            | Proliferative Diabetic Retinopathy|
