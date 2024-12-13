@@ -89,7 +89,7 @@ upload = st.file_uploader("Please make sure that it has a good quality!", type=[
 
 if upload is not None:
     img = Image.open(upload)
-    img = img.resize((200, 200))  # Resize the image to 200x200 pixels
+    img = img.resize((224, 224))
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
     img_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
@@ -105,11 +105,11 @@ if upload is not None:
         <div style="display: flex; justify-content: center; gap: 20px;">
             <div style="text-align: center;">
                 <p><b>Original Picture</b></p>
-                <img src="data:image/png;base64,{img_base64}" style="width: 150px; height: auto; margin: auto;"/>
+                <img src="data:image/png;base64,{img_base64}" style="width: 300px; height: auto; margin: auto;"/>
             </div>
             <div style="text-align: center;">
                 <p><b>Transformed Picture</b></p>
-                <img src="data:image/png;base64,{preprocessed_img_base64}" style="width: 150px; height: auto; margin: auto;"/>
+                <img src="data:image/png;base64,{preprocessed_img_base64}" style="width: 300px; height: auto; margin: auto;"/>
             </div>
         </div>
         """,
@@ -121,13 +121,15 @@ if upload is not None:
         try:
             with st.spinner("Running prediction..."):
                 preprocessed_img = preprocessed_img.resize((224, 224))  # Resize for Keras input
-                img_array = np.array(preprocessed_img).astype('float32') / 255.0
+                img_array = np.array(preprocessed_img).astype('float32')
                 img_array = np.expand_dims(img_array, axis=0)
 
                 prediction = st.session_state.model.predict(img_array)[0][0]  # Single value prediction
                 rounded_prediction = round(prediction)  # Round the value to nearest integer
-                label = severity_labels.get(rounded_prediction, "Unknown Severity")
+                clipped_prediction = np.clip(rounded_prediction, 0, 4)
+                label = severity_labels.get(clipped_prediction, "Unknown Severity")
 
+            st.write("\n")
             st.success(f"Prediction Result: {label}")
         except Exception as e:
             st.error(f"Error during prediction: {str(e)}")
